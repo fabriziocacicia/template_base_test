@@ -32,7 +32,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}         
       - name: Compare latest template Release with last release update
-        if: ${{ vars.TEMPLATE_LATEST_RELEASE }}
         id: compare_versions
         uses: fabriziocacicia/semver-compare-action@v0.1.0-draft
         with:
@@ -41,7 +40,7 @@ jobs:
           operator: '>'
       - name: Cancel Workflow if no new Release
         uses: potiuk/cancel-workflow-runs@v4_7
-        if: ${{ steps.compare_versions.outputs.result && !fromJSON(steps.compare_versions.outputs.result) }}
+        if: ${{ !fromJSON(steps.compare_versions.outputs.result) }}
         with:
           cancelMode: self
           selfPreservation: false

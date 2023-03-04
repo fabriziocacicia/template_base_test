@@ -41,7 +41,7 @@ jobs:
           operator: '>'
       - name: Cancel Workflow if no new Release
         uses: potiuk/cancel-workflow-runs@v4_7
-        if: ${{ !fromJSON(steps.compare_versions.outputs.result) }}
+        if: ${{ steps.compare_versions.outputs.result && !fromJSON(steps.compare_versions.outputs.result) }}
         with:
           cancelMode: self
           selfPreservation: false

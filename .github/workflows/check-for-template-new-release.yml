@@ -1,8 +1,6 @@
 name: Check for Template new Release
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '0 12 * * SUN' # Runs every Sunday at 12:00
 
 jobs:
   check-for-template-new-release:
@@ -10,6 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Get Latest Template Release
         uses: octokit/request-action@v2.1.7
         id: get_latest_release
@@ -21,21 +21,8 @@ jobs:
         id: latest_release_name
         shell: bash
         run: echo "value=${{ fromJSON(steps.get_latest_release.outputs.data).name }}" >> $GITHUB_OUTPUT
-      - name: Compare latest template Release with last release update
-        id: compare_versions
-        uses: fabriziocacicia/semver-compare-action@v0.1.0-draft
-        with:
-          first: '${{ steps.latest_release_name.outputs.value }}'
-          second: '${{ vars.UPDATED_TO_TEMPLATE_RELEASE }}'
-          operator: '>'
-      - name: Cancel Workflow if no new Release
-        uses: potiuk/cancel-workflow-runs@v4_7
-        if: ${{ !fromJSON(steps.compare_versions.outputs.result) }}
-        with:
-          cancelMode: self
-          selfPreservation: false
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Create Variable with latest template Release
+      - name: Create Variable with latest template Release if not present
+        if: ${{ vars.TEMPLATE_LATEST_RELEASE == '' }}
         uses: octokit/request-action@v2.1.7
         id: create_var_template_latest_release
         with:
@@ -43,5 +30,29 @@ jobs:
           name: TEMPLATE_LATEST_RELEASE
           value: '${{ steps.latest_release_name.outputs.value }}'
         env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}         
+      - name: Compare latest template Release with last release update
+        if: ${{ vars.TEMPLATE_LATEST_RELEASE }}
+        id: compare_versions
+        uses: fabriziocacicia/semver-compare-action@v0.1.0-draft
+        with:
+          first: '${{ steps.latest_release_name.outputs.value }}'
+          second: '${{ vars.TEMPLATE_LATEST_RELEASE }}'
+          operator: '>'
+      - name: "Cancel Workflow if no new Release"
+        uses: potiuk/cancel-workflow-runs@v4_7
+        if: ${{ !fromJSON(steps.compare_versions.outputs.result) }}
+        with:
+          cancelMode: self
+          selfPreservation: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Update template release variable
+        uses: octokit/request-action@v2.1.7
+        if: ${{ fromJSON(steps.compare_versions.outputs.result) }}
+        id: update_template_release
+        with:
+          route: PATCH /repos/${{ github.repository}}/actions/variables/TEMPLATE_LATEST_RELEASE
+          name: TEMPLATE_LATEST_RELEASE
+          value: '${{ fromJSON(steps.get_latest_release.outputs.data).name }}'
+        env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-    

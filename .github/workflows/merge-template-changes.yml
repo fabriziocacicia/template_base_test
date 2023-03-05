@@ -35,6 +35,8 @@ jobs:
           git config user.name "Merge Template Changes Workflow"
           git config user.email "<>"
       - shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
           git checkout -b chore/merge_${{ vars.TEMPLATE_REPO }}_${{ vars.TEMPLATE_LATEST_RELEASE }}
           git remote add template https://github.com/${{ vars.TEMPLATE_REPO }}.git

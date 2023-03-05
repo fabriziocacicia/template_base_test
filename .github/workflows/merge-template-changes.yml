@@ -42,6 +42,7 @@ jobs:
           git remote add template https://github.com/${{ vars.TEMPLATE_REPO }}.git
           git pull template ${{ vars.TEMPLATE_LATEST_RELEASE }} --rebase --strategy=recursive -X theirs
           git push -u origin chore/merge_${{ vars.TEMPLATE_REPO }}_${{ vars.TEMPLATE_LATEST_RELEASE }}
+          gh auth login --git-protocol "https" --hostname github.com --with-token <<< "${GITHUB_TOKEN}"
           gh pr create --base ${{ github.ref_name }} --head chore/merge_${{ vars.TEMPLATE_REPO }}_${{ vars.TEMPLATE_LATEST_RELEASE }} --title "chore: Merge ${{ vars.TEMPLATE_REPO }} ${{ vars.TEMPLATE_LATEST_RELEASE }} changes"    
   on-no-new-release:
     runs-on: ubuntu-latest

@@ -42,7 +42,7 @@ jobs:
           gh pr create --base ${{ github.ref_name }} --head chore/merge_${{ vars.TEMPLATE_REPO }}_${{ vars.TEMPLATE_LATEST_RELEASE }} --title "chore: Merge ${{ vars.TEMPLATE_REPO }} ${{ vars.TEMPLATE_LATEST_RELEASE }} changes"    
   on-no-new-release:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'skipped' }} || ${{ github.event.workflow_run.conclusion == 'canceled' }}
+    if: ${{ github.event.workflow_run.conclusion == 'skipped' || github.event.workflow_run.conclusion == 'canceled' }}
     steps:
       - run: echo 'The template has no new release'
   on-failure:

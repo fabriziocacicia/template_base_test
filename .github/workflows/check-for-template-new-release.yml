@@ -30,7 +30,10 @@ jobs:
           name: TEMPLATE_LATEST_RELEASE
           value: '${{ steps.latest_release_name.outputs.value }}'
         env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}         
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      - name: Print create variable output
+        shell: bash
+        run: echo '${{ fromJSON(steps.create_var_template_latest_release.outputs) }}'
       - name: Compare latest template Release with last release update
         id: compare_versions
         uses: fabriziocacicia/semver-compare-action@v0.1.0-draft

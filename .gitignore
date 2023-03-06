@@ -15,7 +15,7 @@ out/
 *.ipr
 
 # mpeltonen/sbt-idea plugin
-.idea_modules/
+.un_altr_cosa
 
 
 ### macOS template

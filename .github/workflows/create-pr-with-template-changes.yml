@@ -39,7 +39,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          git checkout -b $BRANCH_NAME
+          git checkout -b ${{ env.BRANCH_NAME }}
           git remote add template https://github.com/${{ vars.TEMPLATE_REPO }}.git
           git pull template ${{ vars.TEMPLATE_LATEST_RELEASE }} --rebase --strategy=recursive -X theirs
           git push -u origin chore/merge_${{ vars.TEMPLATE_REPO }}_${{ vars.TEMPLATE_LATEST_RELEASE }}

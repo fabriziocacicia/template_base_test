@@ -1,4 +1,4 @@
-name: Merge Template Changes
+name: Create PR with Template Changes
 on:
   workflow_run:
     workflows: [Check for Template new Release]
@@ -9,10 +9,6 @@ env:
   BRANCH_NAME: chore/merge_${{ vars.TEMPLATE_REPO }}_${{ vars.TEMPLATE_LATEST_RELEASE }}
 
 jobs:
-  print_workflow_run:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo '${{ toJSON(github.event.workflow_run) }}'
   on-new-release:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
@@ -57,7 +53,6 @@ jobs:
           run: |
             git branch --delete chore/merge_${{ vars.TEMPLATE_REPO }}_${{ vars.TEMPLATE_LATEST_RELEASE }}
             gh api --method DELETE -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/${{ vars.TEMPLATE_REPO }}/actions/variables/TEMPLATE_LATEST_RELEASE
-
   on-no-new-release:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'skipped' || github.event.workflow_run.conclusion == 'canceled' }}

@@ -8,8 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
       - name: Get Latest Template Release
         uses: octokit/request-action@v2.1.7
         id: get_latest_release

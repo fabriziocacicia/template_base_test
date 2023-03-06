@@ -4,6 +4,9 @@ on:
     workflows: [Check for Template new Release]
     types:
       - completed
+      
+env:
+  BRANCH_NAME: chore/merge_${{ vars.TEMPLATE_REPO }}_${{ vars.TEMPLATE_LATEST_RELEASE }}
 
 jobs:
   print_workflow_run:
@@ -40,12 +43,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          git checkout -b chore/merge_${{ vars.TEMPLATE_REPO }}_${{ vars.TEMPLATE_LATEST_RELEASE }}
+          git checkout -b $BRANCH_NAME
           git remote add template https://github.com/${{ vars.TEMPLATE_REPO }}.git
           git pull template ${{ vars.TEMPLATE_LATEST_RELEASE }} --rebase --strategy=recursive -X theirs
           git push -u origin chore/merge_${{ vars.TEMPLATE_REPO }}_${{ vars.TEMPLATE_LATEST_RELEASE }}
           # gh auth login --git-protocol "https" --hostname github.com --with-token <<< "${GITHUB_TOKEN}"
-          gh pr create --base ${{ github.ref_name }} --head chore/merge_${{ vars.TEMPLATE_REPO }}_${{ vars.TEMPLATE_LATEST_RELEASE }} --title "chore: Merge ${{ vars.TEMPLATE_REPO }} ${{ vars.TEMPLATE_LATEST_RELEASE }} changes" --body "" 
+          gh pr create --base ${{ github.ref_name }} --head chore/merge_${{ vars.TEMPLATE_REPO }}_${{ vars.TEMPLATE_LATEST_RELEASE }} --title "chore: merge ${{ vars.TEMPLATE_REPO }} ${{ vars.TEMPLATE_LATEST_RELEASE }} changes" --body "" 
       - name: Post Run if failed
         if: failure()
         uses: webiny/action-post-run@3.0.0

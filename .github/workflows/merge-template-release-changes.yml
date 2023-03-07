@@ -33,13 +33,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       - name: Print PR number
         shell: bash
-        run: echo ${{ steps.search_pr.outputs.value }}
+        run: echo ${{ steps.search_pr.outputs.value.items }}
       - name: Print PR number fromJSON
         shell: bash
-        run: echo ${{ fromJSON(steps.search_pr.outputs.value) }}
+        run: echo ${{ fromJSON(steps.search_pr.outputs.value).items }}
       - name: Print PR number toJSON
         shell: bash
-        run: echo ${{ toJSON(steps.search_pr.outputs.value) }}
+        run: echo ${{ toJSON(steps.search_pr.outputs.value).items }}
       - name: Merge the PR
         shell: bash
         run: |

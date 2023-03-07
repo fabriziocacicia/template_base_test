@@ -43,7 +43,7 @@ jobs:
       - name: Merge the PR
         shell: bash
         run: |
-          gh pr merge ${{ fromJSON(steps.search_pr.outputs.value)[0].number }} -d -m -t "chore: merge ${{ vars.TEMPLATE_REPO }} ${{ vars.TEMPLATE_LATEST_RELEASE }} changes"
+          gh pr merge ${{ fromJSON(steps.search_pr.outputs.value).items[0].number }} -d -m -t "chore: merge ${{ vars.TEMPLATE_REPO }} ${{ vars.TEMPLATE_LATEST_RELEASE }} changes"
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       - name: Disable merge

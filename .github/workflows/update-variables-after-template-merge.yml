@@ -1,0 +1,29 @@
+name: Update Repository Variables after template merge
+
+on:
+  pull_request:
+      types:
+        - closed
+      branches:
+        - 'chore/merge_**_**'
+
+jobs:
+  update_repo_variables:
+    if: github.event.pull_request.merged == true && startsWith(github.head_ref, 'chore/merge_')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Update UPDATED_TO_TEMPLATE_RELEASE variable
+        uses: octokit/request-action@v2.1.7
+        with:
+          route: PATCH /repos/${{ github.repository}}/actions/variables/UPDATED_TO_TEMPLATE_RELEASE
+          name: UPDATED_TO_TEMPLATE_RELEASE
+          value: ${{ vars.TEMPLATE_LATEST_RELEASE }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      - name: Delete TEMPLATE_LATEST_RELEASE variable
+        uses: octokit/request-action@v2.1.7
+        with:
+          route: DELETE /repos/${{ github.repository }}/actions/variables/TEMPLATE_LATEST_RELEASE
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}

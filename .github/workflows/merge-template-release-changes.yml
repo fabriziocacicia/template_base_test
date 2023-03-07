@@ -31,6 +31,16 @@ jobs:
           gh repo edit --enable-merge-commit=true
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      - name: Get Branch Protection
+        id: branch_protection
+        uses: octokit/request-action@v2.1.7
+        with:
+          route: GET /repos/${{ github.repository }}/branches/main/protection
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      - name: Print Branch Protection
+        shell: bash
+        run: echo ${{ fromJSON(steps.branch_protection.outputs.data) }}
       - name: Disable linear history
         uses: octokit/request-action@v2.1.7
         with:

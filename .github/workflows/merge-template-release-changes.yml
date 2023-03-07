@@ -36,7 +36,7 @@ jobs:
         run: echo ${{ steps.search_pr.outputs.value.items }}
       - name: Print PR number fromJSON
         shell: bash
-        run: echo ${{ fromJSON(steps.search_pr.outputs.value).items }}
+        run: echo ${{ fromJSON(steps.search_pr.outputs.value).items[0] }}
       - name: Print PR number toJSON
         shell: bash
         run: echo ${{ toJSON(steps.search_pr.outputs.value).items }}

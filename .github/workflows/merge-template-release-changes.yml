@@ -31,9 +31,12 @@ jobs:
           gh repo edit --enable-merge-commit=true
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-      - name: Print PR number
+      - name: Print PR number fromJSON
         shell: bash
         run: echo ${{ fromJSON(steps.search_pr.outputs.value) }}
+      - name: Print PR number toJSON
+        shell: bash
+        run: echo ${{ toJSON(steps.search_pr.outputs.value) }}
       - name: Merge the PR
         shell: bash
         run: |

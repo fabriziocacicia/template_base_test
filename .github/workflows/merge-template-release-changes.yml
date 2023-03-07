@@ -14,4 +14,4 @@ jobs:
         shell: bash
         run: |
           RESULT=$(gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /search/issues?q=merge+${{ vars.TEMPLATE_REPO }}+${{ vars.TEMPLATE_LATEST_RELEASE }}+changes+is:pull-request)
-          echo "${{ fromJSON($RESULT) }}""
+          echo $RESULT

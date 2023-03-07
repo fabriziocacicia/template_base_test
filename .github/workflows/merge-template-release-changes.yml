@@ -11,9 +11,49 @@ jobs:
         with:
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}        
       - name: Search Pull Request
+        id: search_pr
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           RESULT=$(gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /search/issues?q=merge+${{ vars.TEMPLATE_REPO }}+${{ vars.TEMPLATE_LATEST_RELEASE }}+changes+is:pull-request)
-          echo $RESULT
+          echo "value=$RESULT" >> $GITHUB_OUTPUT
+      - name: Cancel Workflow if more than one PR found
+        uses: potiuk/cancel-workflow-runs@v4_7
+        if: ${{ fromJSON(steps.search_pr.outputs.value).total_count != 1 }}
+        with:
+          cancelMode: self
+          selfPreservation: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Enable merge
+        shell: bash
+        run: |
+          gh repo edit --enable-merge-commit=true
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      - name: Merge the PR
+        shell: bash
+        run: |
+          gh pr merge ${{ fromJSON(steps.search_pr.outputs.value)[0].number }} -d -m -t "chore: merge ${{ vars.TEMPLATE_REPO }} ${{ vars.TEMPLATE_LATEST_RELEASE }} changes"
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      - name: Disable merge
+        shell: bash
+        run: |
+          gh repo edit --enable-merge-commit=false
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      - name: Update UPDATED_TO_TEMPLATE_RELEASE variable
+        uses: octokit/request-action@v2.1.7
+        with:
+          route: PATCH /repos/${{ github.repository}}/actions/variables/UPDATED_TO_TEMPLATE_RELEASE
+          name: UPDATED_TO_TEMPLATE_RELEASE
+          value: ${{ vars.TEMPLATE_LATEST_RELEASE }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      - name: Delete TEMPLATE_LATEST_RELEASE variable
+        uses: octokit/request-action@v2.1.7
+        with:
+          route: DELETE /repos/${{ github.repository }}/actions/variables/TEMPLATE_LATEST_RELEASE
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}

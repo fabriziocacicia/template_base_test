@@ -16,7 +16,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          RESULT=$(gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /search/issues?q=merge+${{ vars.TEMPLATE_REPO }}+${{ vars.TEMPLATE_LATEST_RELEASE }}+changes+is:pull-request)
+          RESULT=$(gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /search/issues?q=merge+${{ vars.TEMPLATE_REPO }}+${{ vars.TEMPLATE_LATEST_RELEASE }}+changes+is:pull-request+state:open)
           echo "value=$RESULT" >> $GITHUB_OUTPUT
       - name: Cancel Workflow if more than one PR found
         uses: potiuk/cancel-workflow-runs@v4_7

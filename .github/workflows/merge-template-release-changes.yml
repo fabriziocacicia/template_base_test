@@ -1,0 +1,22 @@
+name: Merge PR with template release changes
+
+on:
+  workflow_dispatch:
+      inputs:
+        template_version:
+          description: The version of the template to merge
+          required: true
+          type: string
+
+jobs:
+  merge_pr_with_template_release_changes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}        
+      - name: Search Pull Request
+        shell: bash
+        run: |
+          RESULT=$(gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /search/issues?q=${{ vars.TEMPLATE_REPO }}+is:pull-request)
+          echo "${{ fromJSON($RESULT) }}""

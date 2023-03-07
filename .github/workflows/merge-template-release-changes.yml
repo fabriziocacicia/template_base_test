@@ -20,7 +20,7 @@ jobs:
           echo "value=$RESULT" >> $GITHUB_OUTPUT
       - name: Cancel Workflow if more than one PR found
         uses: potiuk/cancel-workflow-runs@v4_7
-        if: ${{ fromJSON(steps.search_pr.outputs.value).total_count != 1 }}
+        if: ${{ toJSON(steps.search_pr.outputs.value).total_count != 1 }}
         with:
           cancelMode: self
           selfPreservation: false

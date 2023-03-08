@@ -31,32 +31,6 @@ jobs:
           gh repo edit --enable-merge-commit=true
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-      - name: Get Branch Protection
-        id: branch_protection
-        uses: octokit/request-action@v2.1.7
-        with:
-          route: GET /repos/${{ github.repository }}/branches/main/protection
-        env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-      - name: Print Branch Protection
-        shell: bash
-        run: echo ${{ fromJSON(steps.branch_protection.outputs.data) }}
-      - name: Disable linear history
-        uses: octokit/request-action@v2.1.7
-        with:
-          route: PUT /repos/${{ github.repository }}/branches/main/protection
-          required_linear_history: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-      - name: Print PR number
-        shell: bash
-        run: echo ${{ steps.search_pr.outputs.value }}
-      - name: Print PR number fromJSON
-        shell: bash
-        run: echo ${{ fromJSON(steps.search_pr.outputs.value).items[0].number }}
-      - name: Print PR number toJSON
-        shell: bash
-        run: echo ${{ toJSON(steps.search_pr.outputs.value).items }}
       - name: Merge the PR
         shell: bash
         run: |
@@ -67,13 +41,6 @@ jobs:
         shell: bash
         run: |
           gh repo edit --enable-merge-commit=false
-        env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-      - name: Enable linear history
-        uses: octokit/request-action@v2.1.7
-        with:
-          route: PUT /repos/${{ github.repository }}/branches/main/protection
-          required_linear_history: true
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       - name: Update UPDATED_TO_TEMPLATE_RELEASE variable

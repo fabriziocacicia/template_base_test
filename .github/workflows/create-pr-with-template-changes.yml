@@ -35,8 +35,7 @@ jobs:
         run: |
           git config user.name "Merge Template Changes Workflow"
           git config user.email "<>"
-      - name: Create a PR with the changes of the new release
-        shell: bash
+      - shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -44,6 +43,7 @@ jobs:
           git remote add template https://github.com/${{ vars.TEMPLATE_REPO }}.git
           git pull template ${{ vars.TEMPLATE_LATEST_RELEASE }} --rebase --strategy=recursive -X theirs
           git push -u origin ${{ env.BRANCH_NAME }}
+          # gh auth login --git-protocol "https" --hostname github.com --with-token <<< "${GITHUB_TOKEN}"
           gh pr create --base ${{ github.ref_name }} --head ${{ env.BRANCH_NAME }} --title "chore: merge ${{ vars.TEMPLATE_REPO }} ${{ vars.TEMPLATE_LATEST_RELEASE }} changes" --body "" 
       - name: Post Run if failed
         if: failure()
@@ -62,5 +62,5 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     steps:
-      - run: echo 'The Check for Template new Release failed'
+      - run: echo 'The Check for Template Updates failed'
 

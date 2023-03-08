@@ -39,7 +39,7 @@ jobs:
         with:
           route: POST /repos/${{ github.repository}}/actions/variables
           name: TEMPLATE_LATEST_RELEASE
-          value: 'v0.9.0'
+          value: '${{ steps.latest_release_name.outputs.value }}'
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
     

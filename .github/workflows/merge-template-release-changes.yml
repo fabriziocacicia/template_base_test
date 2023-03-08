@@ -31,6 +31,12 @@ jobs:
           gh repo edit --enable-merge-commit=true
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      - name: Allow bypass protection by admings
+        uses: octokit/request-action@v2.1.7
+        with:
+          route: DELETE /repos/${{ github.repository }}/branches/main/protection/enforce_admins
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       - name: Merge the PR
         shell: bash
         run: |
@@ -41,6 +47,12 @@ jobs:
         shell: bash
         run: |
           gh repo edit --enable-merge-commit=false
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      - name: Disable bypass protection by admings
+        uses: octokit/request-action@v2.1.7
+        with:
+          route: POST /repos/${{ github.repository }}/branches/main/protection/enforce_admins
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       - name: Update UPDATED_TO_TEMPLATE_RELEASE variable

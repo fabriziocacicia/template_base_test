@@ -43,29 +43,25 @@ jobs:
           gh pr merge ${{ fromJSON(steps.search_pr.outputs.value).items[0].number }} -d -m -t "chore: merge ${{ vars.TEMPLATE_REPO }} ${{ vars.TEMPLATE_LATEST_RELEASE }} changes"
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-      - name: Disable merge
-        shell: bash
-        run: |
-          gh repo edit --enable-merge-commit=false
+      - name: Post Run succesfull Workflow - Update Variables
+        if: success()
+        uses: webiny/action-post-run@3.0.0
+        id: post-run-command
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-      - name: Disable bypass protection by admings
-        uses: octokit/request-action@v2.1.7
         with:
-          route: POST /repos/${{ github.repository }}/branches/main/protection/enforce_admins
+          run: |
+            gh api --method PATCH -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/${{ github.repository }}/actions/variables/UPDATED_TO_TEMPLATE_RELEASE -f name='UPDATED_TO_TEMPLATE_RELEASE' -f value='${{ vars.TEMPLATE_LATEST_RELEASE }}'
+            gh api --method DELETE -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/${{ github.repository }}/actions/variables/TEMPLATE_LATEST_RELEASE 
+      - name: Post Run Workflow - Restore repo settings
+        uses: webiny/action-post-run@3.0.0
+        id: post-run-command
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-      - name: Update UPDATED_TO_TEMPLATE_RELEASE variable
-        uses: octokit/request-action@v2.1.7
         with:
-          route: PATCH /repos/${{ github.repository}}/actions/variables/UPDATED_TO_TEMPLATE_RELEASE
-          name: UPDATED_TO_TEMPLATE_RELEASE
-          value: ${{ vars.TEMPLATE_LATEST_RELEASE }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-      - name: Delete TEMPLATE_LATEST_RELEASE variable
-        uses: octokit/request-action@v2.1.7
-        with:
-          route: DELETE /repos/${{ github.repository }}/actions/variables/TEMPLATE_LATEST_RELEASE
-        env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          run: |
+            # Disable merge 
+            gh repo edit --enable-merge-commit=false
+            # Disable allow bypass protection rules by admins
+            gh api --method POST -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/${{ github.repository }}/branches/main/protection/enforce_admins
+           

@@ -1,6 +1,5 @@
 name: Delete Tags without Release
 on:
-  workflow_dispatch:
   branch_protection_rule:
     types: [created]
 

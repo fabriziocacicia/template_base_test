@@ -7,6 +7,7 @@ The base template test that all the repositories should create from.
 - Keep History Conventional: keeps in the commits history of the `main` branch only the commits that follows the [Conventional Commits][1] convention
 - Conventional PR Titles: checks that the title of PRs follows the [Conventional Commits][1] convention
 - Add some test
+- Add another line
 
 ## Usage
 Fork this repo or use it as template to create a new repo.
